@@ -4,9 +4,18 @@
         <p class="flex justify-around bg-gray-100 mt-4">
             <router-link to="/">Go to Login</router-link>
             <router-link to="/register">Go to Register</router-link>
+            <router-link to="/home">Go Home</router-link>
+            <button @click="logout">Salir</button>
         </p>
         <div class="min-h-screen">
             <router-view></router-view>
         </div>
     </div>
 </template>
+
+<script setup>
+    const logout = async () => {
+        await axios.post('/api/logout')
+        this.$router.push('/')
+    }
+</script>
