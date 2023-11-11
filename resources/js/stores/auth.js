@@ -3,10 +3,15 @@ import { ref } from 'vue';
 
 export const useAuthStore = defineStore("auth", () => {
     const isAuth = ref(false);
-    const user = ref({});
+    const user = ref(null);
 
-    function setUser(userAuth) {
-        user.value = {...userAuth}
+    async function setUser() {
+        try {
+            const { data } = await axios.get('/api/user')
+            user.value = {...data}
+        } catch(error) {
+            if(error.response.status === 401) logout()
+        }
     }
 
     function setAuth() {
@@ -14,7 +19,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     function logout() {
-        user.value = {}
+        user.value = null
         isAuth.value = false
     }
 

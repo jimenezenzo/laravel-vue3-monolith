@@ -1,21 +1,14 @@
 <template>
-    <div class="bg-slate-200 container mx-auto">
-        <h1 class="text-xl text-center">App Vue Js 3</h1>
-        <p class="flex justify-around bg-gray-100 mt-4">
-            <router-link to="/" v-if="!store.isAuth">Login</router-link>
-            <router-link to="/register" v-if="!store.isAuth">Register</router-link>
-            <router-link to="/home" v-if="store.isAuth">Home</router-link>
-            <button @click="logout" v-if="store.isAuth">Logout</button>
-        </p>
-        <div class="min-h-screen">
-            <router-view></router-view>
-        </div>
+    <Navbar></Navbar>
+    <div class="bg-slate-100 px-4 min-h-screen flex flex-col">
+        <RouterView class="mx-auto mt-10 md:w-8/12 bg-white shadow-lg rounded-md px-5 py-10" />
     </div>
 </template>
 
 <script setup>
 import router from './router';
 import { useAuthStore } from '@/stores/auth'
+import Navbar from './components/Navbar.vue';
 
 const store = useAuthStore()
 
