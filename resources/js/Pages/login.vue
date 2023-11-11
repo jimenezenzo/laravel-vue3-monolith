@@ -1,6 +1,9 @@
 <template>
     <div class="max-w-2xl m-auto">
         <div class="bg-white shadow-md rounded-md mt-10 px-5 py-10">
+            <div class="bg-red-400 rounded my-2 p-2 text-white" v-if="errors.length > 0">
+                <p v-for="error in errors">{{ error }}</p>
+            </div>
             <form @submit.prevent>
                 <div class="mb-4">
                     <label class="text-slate-800" for="email">
@@ -27,18 +30,31 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const email = ref('')
 const password = ref('')
+const errors = ref([])
+const router = useRouter()
+const store = useAuthStore()
 
 const submit = async () => {
+    errors.value = []
+
     const request = {
         email: email.value,
         password: password.value
     }
 
-    await axios.get('sanctum/csrf-cookie')
-    await axios.post('api/login', request)
-    this.$router.push('/home')
+    try {
+        await axios.get('sanctum/csrf-cookie')
+        await axios.post('api/login', request)
+        store.setAuth()
+        router.push('/home')
+    }
+    catch(error) {
+        if(error.response.status === 422) errors.value.push(error.response.data.message)
+    }
 }
 </script>

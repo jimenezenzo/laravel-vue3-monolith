@@ -1,6 +1,9 @@
 <template>
     <div class="max-w-2xl m-auto">
         <div class="bg-white shadow-md rounded-md mt-10 px-5 py-10">
+            <div class="bg-red-400 rounded my-2 p-2 text-white" v-if="errors.length > 0">
+                <p v-for="error in errors">{{ error }}</p>
+            </div>
             <form @submit.prevent>
                 <div class="mb-4">
                     <label class="text-slate-800" for="name">
@@ -41,13 +44,18 @@
 
 <script setup>
     import { ref } from 'vue';
+    import { useRouter, useRoute } from 'vue-router'
 
     const name = ref('')
     const email = ref('')
     const password = ref('')
     const password_confirmation = ref('')
+    const errors = ref([])
+    const router = useRouter()
 
     const submit = async () => {
+        errors.value = []
+        
         const request = {
             name: name.value,
             email: email.value,
@@ -55,8 +63,11 @@
             password_confirmation: password_confirmation.value
         }
 
-        await axios.post('api/register', request)
-            .then(() => this.$router.push({path: '/login'}))
-            .catch(() => console.error('error al registrar'))
+        try {
+            await axios.post('api/register', request)
+            router.push('/')
+        } catch (error) {
+            if(error.response.status === 422) errors.value.push(error.response.data.message)
+        }
     }
 </script>
